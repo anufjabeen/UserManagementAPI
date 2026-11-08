@@ -1,0 +1,59 @@
+@host = http://localhost:5000
+@token = secret-token-123
+
+### Health check (public)
+GET {{host}}/
+
+### Get all users
+GET {{host}}/users
+Authorization: Bearer {{token}}
+
+### Get one user
+GET {{host}}/users/1
+Authorization: Bearer {{token}}
+
+### Create a user (valid)
+POST {{host}}/users
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "name": "Carol White", "email": "carol@example.com", "age": 28, "department": "Finance" }
+
+### Create a user (INVALID: short name, bad email, underage) -> 400
+POST {{host}}/users
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "name": "C", "email": "not-an-email", "age": 12, "department": "" }
+
+### Create a user (duplicate email) -> 409
+POST {{host}}/users
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "name": "Alice Clone", "email": "alice@example.com", "age": 31, "department": "Engineering" }
+
+### Update a user
+PUT {{host}}/users/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "name": "Alice Johnson-Lee", "email": "alice@example.com", "age": 31, "department": "Engineering" }
+
+### Update a user that does not exist -> 404
+PUT {{host}}/users/999
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "name": "Ghost User", "email": "ghost@example.com", "age": 40, "department": "None" }
+
+### Delete a user
+DELETE {{host}}/users/2
+Authorization: Bearer {{token}}
+
+### No token -> 401
+GET {{host}}/users
+
+### Wrong token -> 401
+GET {{host}}/users
+Authorization: Bearer wrong-token
